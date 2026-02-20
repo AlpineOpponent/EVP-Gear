@@ -1,0 +1,223 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+/* Driver.js Theme Overrides */
+.driver-popover {
+  background-color: var(--color-card) !important;
+  color: var(--color-foreground) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius-xl) !important;
+  box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5) !important;
+  padding: 24px !important;
+  max-width: 420px !important;
+  min-width: 320px !important;
+}
+.driver-popover-title {
+  font-family: var(--font-display) !important;
+  color: var(--color-primary) !important;
+  font-size: 28px !important;
+  font-weight: normal !important;
+  margin-bottom: 12px !important;
+}
+.driver-popover-description {
+  color: var(--color-text-muted) !important;
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+}
+.driver-popover-footer {
+  margin-top: 24px !important;
+}
+.driver-popover-progress-text {
+  color: var(--color-text-tertiary) !important;
+}
+.driver-popover-next-btn, .driver-popover-prev-btn {
+  background-color: var(--color-surface-elevated) !important;
+  color: var(--color-text-muted) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius-sm) !important;
+  text-shadow: none !important;
+  font-weight: 500 !important;
+  padding: 8px 16px !important;
+  transition: all 0.2s ease !important;
+}
+.driver-popover-next-btn:hover, .driver-popover-prev-btn:hover {
+  background-color: var(--color-accent) !important;
+  color: var(--color-foreground) !important;
+}
+.driver-popover-next-btn {
+  background-color: var(--color-primary) !important;
+  color: var(--color-primary-foreground) !important;
+  border-color: var(--color-primary) !important;
+}
+.driver-popover-next-btn:hover {
+  background-color: var(--color-orange-light) !important;
+  color: var(--color-primary-foreground) !important;
+}
+.driver-popover-close-btn {
+  color: var(--color-text-muted) !important;
+  top: 16px !important;
+  right: 16px !important;
+}
+.driver-popover-close-btn:hover {
+  color: var(--color-foreground) !important;
+}
+.driver-popover-arrow {
+  border-color: var(--color-card) !important;
+}
+#driver-highlighted-element-stage {
+  border-radius: var(--radius-lg) !important;
+  outline: 2px solid var(--color-primary) !important;
+}
+
+@theme {
+  /* Dynamic Color Variables */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-success: var(--success);
+  --color-orange-light: var(--orange-light);
+  --color-text-tertiary: var(--text-tertiary);
+  --color-text-muted: var(--text-muted);
+
+  --color-surface-recessed: var(--surface-recessed);
+  --color-surface-elevated: var(--surface-elevated);
+
+  /* Radius */
+  --radius-xl: 12px;
+  --radius-lg: 10px;
+  --radius-md: 8px;
+  --radius-sm: 6px;
+
+  /* Fonts */
+  --font-display: "Instrument Serif", serif;
+  --font-ui: "Inter", sans-serif;
+  --font-mono: "DM Mono", monospace;
+}
+
+@layer base {
+  html, body {
+    @apply h-full bg-background text-foreground antialiased transition-colors duration-500;
+    font-family: var(--font-ui);
+  }
+
+  * {
+    @apply border-border;
+  }
+}
+
+/* Light Theme (Default fallback) */
+:root {
+  --background: #F9FAFB;
+  --foreground: #09090B;
+  --card: #FFFFFF;
+  --card-foreground: #09090B;
+  --popover: #FFFFFF;
+  --popover-foreground: #09090B;
+  --primary: #FF5C00;
+  --primary-foreground: #09090B;
+  --secondary: #F4F4F5;
+  --secondary-foreground: #18181B;
+  --muted: #F4F4F5;
+  --muted-foreground: #52525B;
+  --accent: #F4F4F5;
+  --accent-foreground: #18181B;
+  --destructive: #EF4444;
+  --destructive-foreground: #09090B;
+  --border: #E4E4E7;
+  --input: #E4E4E7;
+  --ring: #FF5C00;
+  --success: #16A34A;
+  --orange-light: #FF8A4C;
+  --text-tertiary: #52525B;
+  --text-muted: #3F3F46;
+  --surface-recessed: #F4F4F5;
+  --surface-elevated: #FFFFFF;
+  --radius: 10px;
+}
+
+/* Dark Theme (Current Default UI) */
+:root.dark {
+  --background: #0A0A0B;
+  --foreground: #FFFFFF;
+  --card: #141417;
+  --card-foreground: #FFFFFF;
+  --popover: #1A1A1D;
+  --popover-foreground: #FFFFFF;
+  --primary: #FF5C00;
+  --primary-foreground: #FFFFFF;
+  --secondary: #1A1A1D;
+  --secondary-foreground: #FFFFFF;
+  --muted: #111113;
+  --muted-foreground: #ADADB0;
+  --accent: #1F1F23;
+  --accent-foreground: #FFFFFF;
+  --destructive: #EF4444;
+  --destructive-foreground: #FFFFFF;
+  --border: #2A2A2E;
+  --input: #1F1F23;
+  --ring: #FF5C00;
+  --success: #22C55E;
+  --orange-light: #FF8A4C;
+  --text-tertiary: #8B8B90;
+  --text-muted: #6B6B70;
+  --surface-recessed: #050505;
+  --surface-elevated: #1F1F23;
+}
+
+/* Nature Theme */
+:root.nature {
+  --background: #252A24;
+  --foreground: #EFECE1;
+  --card: #2D332B;
+  --card-foreground: #EFECE1;
+  --popover: #343A32;
+  --popover-foreground: #EFECE1;
+  --primary: #D47942;
+  --primary-foreground: #FFFFFF;
+  --secondary: #3B4338;
+  --secondary-foreground: #EFECE1;
+  --muted: #3B4338;
+  --muted-foreground: #9DA398;
+  --accent: #40493D;
+  --accent-foreground: #FFFFFF;
+  --destructive: #D86054;
+  --destructive-foreground: #FFFFFF;
+  --border: #4A5446;
+  --input: #40493D;
+  --ring: #D47942;
+  --success: #679267;
+  --orange-light: #E49363;
+  --text-tertiary: #B4B9AE;
+  --text-muted: #9DA398;
+  --surface-recessed: #1D221C;
+  --surface-elevated: #3A4237;
+}

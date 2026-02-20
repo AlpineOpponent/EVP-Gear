@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install @nivo/core @nivo/pie react-hook-form @hookform/resolvers @react-pdf/renderer html2canvas jspdf lucide-react@latest)",
+      "Bash(npx shadcn@latest init:*)",
+      "Bash(npx shadcn@latest add:*)",
+      "mcp__pencil__open_document",
+      "Bash(ls:*)",
+      "Bash(curl:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run build)"
+    ]
+  }
+}
