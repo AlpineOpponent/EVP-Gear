@@ -159,22 +159,38 @@ const styles = StyleSheet.create({
   },
   watermark: {
     position: 'absolute',
-    top: '30%',
-    left: '15%',
-    width: '70%',
-    opacity: 0.03,
-    zIndex: -1,
+    top: 20,
+    right: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    opacity: 0.4,
+  },
+  watermarkText: {
+    fontSize: 8,
+    color: '#6B6B70',
+  },
+  watermarkBrand: {
+    fontSize: 8,
+    color: '#0A0A0B',
+    fontFamily: 'Instrument Serif',
+    marginLeft: 2,
+  },
+  watermarkIcon: {
+    width: 12,
+    height: 8,
+    marginRight: 4,
   }
 });
 
-// Helper to draw an SVG Pie Chart for @react-pdf/renderer
 const Watermark = () => (
   <View style={styles.watermark} fixed>
-    <Svg viewBox="0 0 900 600">
+    <Svg style={styles.watermarkIcon} viewBox="0 0 900 600">
       <Polygon points="125,500 375,100 625,500" fill="#FF5C00" />
       <Polygon points="325,500 525,180 725,500" fill="#FF8A4C" />
       <Polygon points="525,500 650,300 775,500" fill="#2A2A2E" />
     </Svg>
+    <Text style={styles.watermarkText}>made with </Text>
+    <Text style={styles.watermarkBrand}>EVP-Gear</Text>
   </View>
 );
 
