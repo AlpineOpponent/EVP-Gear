@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Note: EVP-Gear is a local-first application.
+# User data is stored locally in IndexedDB and is never exposed to crawlers.
