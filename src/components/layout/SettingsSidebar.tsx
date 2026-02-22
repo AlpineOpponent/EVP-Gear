@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Settings, Database, Info, Shield, LogOut, Package, Plus, MoreVertical, Edit2, Trash2, Github } from 'lucide-react';
+import { X, Settings, Database, Info, Shield, LogOut, Package, Plus, MoreVertical, Edit2, Trash2, Github, Upload } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '../shared/Button';
 import { useLiveQuery } from 'dexie-react-hooks';
@@ -8,6 +8,7 @@ import { usePackStore } from '../../store/usePackStore';
 import { useSettingsStore } from '../../store/useSettingsStore';
 import { type PageType } from './Navbar';
 import { Popover, PopoverContent, PopoverTrigger, PopoverClose } from '../ui/popover';
+import { toast } from 'sonner';
 
 interface SettingsSidebarProps {
   isOpen: boolean;
@@ -19,6 +20,7 @@ export const SettingsSidebar = ({ isOpen, onClose, onNavigate }: SettingsSidebar
   const packs = useLiveQuery(() => db.packs.toArray()) || [];
   const { loadPack, createNewPack, deletePack } = usePackStore();
   const { theme, units, setTheme, toggleUnits } = useSettingsStore();
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const handleExportData = async () => {
     try {
@@ -38,6 +40,58 @@ export const SettingsSidebar = ({ isOpen, onClose, onNavigate }: SettingsSidebar
       console.error('Failed to export data:', err);
       alert('Failed to export database.');
     }
+  };
+
+  const handleImportData = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      try {
+        const content = event.target?.result as string;
+        const data = JSON.parse(content);
+
+        if (!data.gearItems || !data.packs) {
+          throw new Error('Invalid backup file format');
+        }
+
+        const mode = confirm('Do you want to REPLACE your entire database with this backup? (Click Cancel to MERGE instead)')
+          ? 'replace'
+          : confirm('Do you want to MERGE this backup with your existing data?')
+            ? 'merge'
+            : null;
+
+        if (!mode) return;
+
+        await db.transaction('rw', db.gearItems, db.packs, async () => {
+          if (mode === 'replace') {
+            await db.gearItems.clear();
+            await db.packs.clear();
+          }
+
+          if (mode === 'replace') {
+            await db.gearItems.bulkAdd(data.gearItems);
+            await db.packs.bulkAdd(data.packs);
+          } else {
+            // For merge, we use put to update existing or add new
+            await Promise.all([
+              ...data.gearItems.map((item: any) => db.gearItems.put(item)),
+              ...data.packs.map((pack: any) => db.packs.put(pack))
+            ]);
+          }
+        });
+
+        alert(`Successfully ${mode === 'replace' ? 'restored' : 'merged'} ${data.gearItems.length} items and ${data.packs.length} packs.`);
+        onClose();
+      } catch (err) {
+        console.error('Failed to import data:', err);
+        alert('Failed to import database: ' + (err instanceof Error ? err.message : 'Unknown error'));
+      }
+    };
+    reader.readAsText(file);
+    // Reset input value to allow importing same file again
+    e.target.value = '';
   };
 
   const handleClearData = async () => {
@@ -70,8 +124,23 @@ export const SettingsSidebar = ({ isOpen, onClose, onNavigate }: SettingsSidebar
   };
 
   const handleDeletePack = async (packId: string) => {
-    if (confirm('Are you sure you want to delete this pack?')) {
+    const packToDelete = await db.packs.get(packId);
+    if (!packToDelete) return;
+
+    try {
       await deletePack(packId);
+      toast(`Deleted pack "${packToDelete.packName}"`, {
+        action: {
+          label: 'Undo',
+          onClick: async () => {
+            await db.packs.add(packToDelete);
+            toast.success(`Restored pack "${packToDelete.packName}"`);
+          }
+        }
+      });
+    } catch (err) {
+      console.error('Failed to delete pack:', err);
+      toast.error('Failed to delete pack');
     }
   };
 
@@ -236,12 +305,26 @@ export const SettingsSidebar = ({ isOpen, onClose, onNavigate }: SettingsSidebar
             <section className="space-y-4">
               <h3 className="text-[10px] font-bold text-text-tertiary uppercase tracking-widest">Data Management</h3>
               <div className="space-y-1">
+                <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleImportData}
+                    accept=".json"
+                    className="hidden"
+                />
                 <button
                     onClick={handleExportData}
                     className="w-full flex items-center gap-3 p-3 hover:bg-accent rounded-lg text-sm text-text-secondary transition-colors group cursor-pointer"
                 >
                   <Database className="w-4 h-4 text-text-tertiary group-hover:text-primary transition-colors" />
                   <span>Export Database (JSON)</span>
+                </button>
+                <button
+                    onClick={() => fileInputRef.current?.click()}
+                    className="w-full flex items-center gap-3 p-3 hover:bg-accent rounded-lg text-sm text-text-secondary transition-colors group cursor-pointer"
+                >
+                  <Upload className="w-4 h-4 text-text-tertiary group-hover:text-primary transition-colors" />
+                  <span>Import Database (JSON)</span>
                 </button>
                 <button
                     onClick={handleClearData}

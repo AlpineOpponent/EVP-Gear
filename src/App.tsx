@@ -7,11 +7,29 @@ import { ViewPage } from './pages/ViewPage';
 import { PackPage } from './pages/PackPage';
 import { type GearItem } from './types/gear';
 import { useAppTour } from './hooks/useAppTour';
+import { Toaster } from 'sonner';
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
+import { useSearchStore } from './store/useSearchStore';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<PageType>('home');
   const [editingItem, setEditingItem] = useState<GearItem | undefined>(undefined);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const triggerSearchFocus = useSearchStore(s => s.triggerSearchFocus);
+
+  useKeyboardShortcuts({
+    'ctrl+k': () => {
+      setCurrentPage('view');
+      triggerSearchFocus();
+    },
+    'meta+k': () => {
+      setCurrentPage('view');
+      triggerSearchFocus();
+    },
+    'escape': () => {
+      setIsSidebarOpen(false);
+    }
+  });
 
   const { startTour } = useAppTour({ setCurrentPage, setIsSidebarOpen });
 
@@ -27,8 +45,19 @@ function App() {
     setCurrentPage('edit');
   };
 
+  const handleDuplicateItem = (item: GearItem) => {
+    const duplicate: GearItem = {
+      ...item,
+      id: crypto.randomUUID(),
+      name: `${item.name} (Copy)`
+    };
+    setEditingItem(duplicate);
+    setCurrentPage('edit');
+  };
+
   return (
     <div className="flex flex-col h-screen bg-background text-foreground overflow-hidden">
+      <Toaster position="bottom-right" theme="dark" />
       <Navbar
         currentPage={currentPage}
         onPageChange={handlePageChange}
@@ -52,7 +81,7 @@ function App() {
           />
         )}
         {currentPage === 'view' && (
-          <ViewPage onEdit={handleEditItem} />
+          <ViewPage onEdit={handleEditItem} onDuplicate={handleDuplicateItem} />
         )}
         {currentPage === 'pack' && (
           <PackPage />

@@ -11,12 +11,21 @@ import { AlertCircle, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { inputToGrams, gramsToInput } from '../lib/gearUtils';
+import { toast } from 'sonner';
+import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 
 export const EditPage = ({ initialData, onComplete }: { initialData?: GearItem; onComplete?: () => void }) => {
   const { units } = useSettingsStore();
   const previousUnits = useRef(units);
   const [isNewTT, setIsNewTT] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
+  const submitButtonRef = useRef<HTMLButtonElement>(null);
+
+  useKeyboardShortcuts({
+    'ctrl+s': () => submitButtonRef.current?.click(),
+    'meta+s': () => submitButtonRef.current?.click(),
+    'escape': () => reset()
+  });
 
   const {
     register,
@@ -128,13 +137,24 @@ export const EditPage = ({ initialData, onComplete }: { initialData?: GearItem; 
 
   const handleDelete = async () => {
     if (!initialData) return;
-    if (window.confirm(`Are you sure you want to delete "${initialData.name}"?`)) {
-      try {
-        await db.gearItems.delete(initialData.id);
-        onComplete?.();
-      } catch (err) {
-        console.error('Failed to delete gear:', err);
-      }
+
+    try {
+      const itemToDelete = { ...initialData };
+      await db.gearItems.delete(initialData.id);
+      onComplete?.();
+
+      toast(`Deleted "${itemToDelete.name}"`, {
+        action: {
+          label: 'Undo',
+          onClick: async () => {
+            await db.gearItems.add(itemToDelete);
+            toast.success(`Restored "${itemToDelete.name}"`);
+          }
+        }
+      });
+    } catch (err) {
+      console.error('Failed to delete gear:', err);
+      toast.error('Failed to delete gear');
     }
   };
 
@@ -294,7 +314,7 @@ export const EditPage = ({ initialData, onComplete }: { initialData?: GearItem; 
                 Clear Form
               </Button>
             )}
-            <Button type="submit">
+            <Button ref={submitButtonRef} type="submit">
               {initialData ? 'Update Entry' : 'Save Entry'}
             </Button>
           </div>

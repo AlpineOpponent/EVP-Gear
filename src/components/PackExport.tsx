@@ -8,6 +8,7 @@ import {
   Svg,
   Path,
   Circle,
+  Polygon,
   Font
 } from '@react-pdf/renderer';
 import { type GearItem } from '../types/gear';
@@ -155,10 +156,28 @@ const styles = StyleSheet.create({
   itemBrand: {
     fontSize: 8,
     color: '#8B8B90',
+  },
+  watermark: {
+    position: 'absolute',
+    top: '30%',
+    left: '15%',
+    width: '70%',
+    opacity: 0.03,
+    zIndex: -1,
   }
 });
 
 // Helper to draw an SVG Pie Chart for @react-pdf/renderer
+const Watermark = () => (
+  <View style={styles.watermark} fixed>
+    <Svg viewBox="0 0 900 600">
+      <Polygon points="125,500 375,100 625,500" fill="#FF5C00" />
+      <Polygon points="325,500 525,180 725,500" fill="#FF8A4C" />
+      <Polygon points="525,500 650,300 775,500" fill="#2A2A2E" />
+    </Svg>
+  </View>
+);
+
 const PieChart = ({ data, units, size = 100 }: { data: { label: string, value: number, color: string }[], units: 'metric' | 'imperial', size?: number }) => {
   const total = data.reduce((sum, d) => sum + d.value, 0);
   if (total === 0) {
@@ -275,6 +294,7 @@ export const PackExport = ({ packName, units, items, stats }: PackExportProps) =
   return (
     <Document>
       <Page size="A4" style={styles.page}>
+        <Watermark />
         <View style={styles.header}>
           <Text style={styles.title}>{packName}</Text>
         </View>

@@ -1,12 +1,13 @@
 import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { useSearchStore, type SearchMode } from '../store/useSearchStore';
 import { useGearSearch } from '../hooks/useGearSearch';
-import { Search, Edit2 } from 'lucide-react';
+import { Search, Edit2, Copy, MoreVertical } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { type GearItem } from '../types/gear';
 import { getBrandLogo } from '../lib/logoAssets';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { formatWeight } from '../lib/gearUtils';
+import { Popover, PopoverContent, PopoverTrigger, PopoverClose } from '../components/ui/popover';
 
 const BrandLogo = ({ brand, className }: { brand?: string; className?: string }) => {
   const [error, setError] = useState(false);
@@ -34,12 +35,20 @@ const BrandLogo = ({ brand, className }: { brand?: string; className?: string })
   );
 };
 
-export const ViewPage = ({ onEdit }: { onEdit?: (item: GearItem) => void }) => {
-  const { query, mode, setQuery, setMode } = useSearchStore();
+export const ViewPage = ({ onEdit, onDuplicate }: { onEdit?: (item: GearItem) => void; onDuplicate?: (item: GearItem) => void }) => {
+  const { query, mode, setQuery, setMode, searchFocusTrigger } = useSearchStore();
   const { units } = useSettingsStore();
   const gear = useGearSearch() || [];
   const [sliderStyle, setSliderStyle] = useState({ left: 0, width: 0 });
   const tabsRef = useRef<(HTMLButtonElement | null)[]>([]);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Handle global search focus trigger
+  useEffect(() => {
+    if (searchFocusTrigger > 0) {
+      searchInputRef.current?.focus();
+    }
+  }, [searchFocusTrigger]);
 
   const groupedGear = useMemo(() => {
     const groups: Record<string, Record<string, Record<string, Record<string, GearItem[]>>>> = {};
@@ -135,6 +144,7 @@ export const ViewPage = ({ onEdit }: { onEdit?: (item: GearItem) => void }) => {
           <div className="mt-[1px] flex items-center gap-3 bg-card border-x border-b border-border rounded-b-lg px-4 py-3 shadow-sm">
             <Search className="w-4 h-4 text-text-muted" />
             <input
+              ref={searchInputRef}
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -202,12 +212,31 @@ export const ViewPage = ({ onEdit }: { onEdit?: (item: GearItem) => void }) => {
                                                             <div className="text-[14px] font-mono text-text-secondary">
                                                                 {formatWeight(item.weight, units)}
                                                             </div>
-                                                            <button
-                                                                onClick={() => onEdit?.(item)}
-                                                                className="p-2 rounded-md hover:bg-accent text-text-muted hover:text-primary transition-colors"
-                                                            >
-                                                                <Edit2 className="w-4 h-4" />
-                                                            </button>
+                                                            <Popover>
+                                                                <PopoverTrigger asChild>
+                                                                    <button className="p-2 rounded-md hover:bg-accent text-text-muted hover:text-primary transition-colors">
+                                                                        <MoreVertical className="w-4 h-4" />
+                                                                    </button>
+                                                                </PopoverTrigger>
+                                                                <PopoverContent className="w-40 p-1 bg-card border border-border shadow-xl z-[105]" align="end">
+                                                                    <PopoverClose asChild>
+                                                                        <button
+                                                                            onClick={() => onEdit?.(item)}
+                                                                            className="w-full flex items-center gap-2 px-2 py-1.5 text-sm hover:bg-accent rounded text-text-secondary hover:text-primary transition-colors text-left"
+                                                                        >
+                                                                            <Edit2 className="w-4 h-4" /> Edit Item
+                                                                        </button>
+                                                                    </PopoverClose>
+                                                                    <PopoverClose asChild>
+                                                                        <button
+                                                                            onClick={() => onDuplicate?.(item)}
+                                                                            className="w-full flex items-center gap-2 px-2 py-1.5 text-sm hover:bg-accent rounded text-text-secondary hover:text-primary transition-colors text-left"
+                                                                        >
+                                                                            <Copy className="w-4 h-4" /> Duplicate
+                                                                        </button>
+                                                                    </PopoverClose>
+                                                                </PopoverContent>
+                                                            </Popover>
                                                         </div>
                                                     </div>
                                                 ))}
