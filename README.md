@@ -79,6 +79,11 @@ To run EVP-Gear locally:
     npm run dev
     ```
 
+## 🤝 Contributors
+
+*   **[AlpineOpponent](https://github.com/AlpineOpponent)** - Creator & Lead Developer
+*   **Gemini** - AI Development Assistant
+
 <br />
 <div align="center">
   <i>"Measure twice, pack once."</i>
