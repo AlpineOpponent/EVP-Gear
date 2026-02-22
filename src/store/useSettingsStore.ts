@@ -34,6 +34,12 @@ export const useSettingsStore = create<SettingsState>((set) => ({
       document.documentElement.classList.add(newTheme);
     }
 
+    // Update favicon
+    const favicon = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
+    if (favicon) {
+      favicon.href = `/evp.logo.${newTheme}.svg`;
+    }
+
     return { theme: newTheme };
   }),
   toggleUnits: () => set((state) => {

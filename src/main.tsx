@@ -4,11 +4,18 @@ import './index.css'
 import App from './App.tsx'
 
 const initTheme = () => {
-  const saved = localStorage.getItem('evp-theme');
+  const saved = localStorage.getItem('evp-theme') || 'dark';
+
   if (saved === 'nature') {
     document.documentElement.classList.add('nature');
   } else if (saved !== 'light') {
     document.documentElement.classList.add('dark');
+  }
+
+  // Set initial favicon
+  const favicon = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
+  if (favicon) {
+    favicon.href = `/evp.logo.${saved}.svg`;
   }
 };
 initTheme();

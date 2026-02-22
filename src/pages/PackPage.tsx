@@ -482,7 +482,7 @@ export const PackPage = () => {
                 {pieData.length > 0 ? (
                   <ResponsivePie
                       data={pieData}
-                      margin={{ top: 20, right: showWtChart ? 40 : 80, bottom: 20, left: showWtChart ? 40 : 80 }}
+                      margin={{ top: 40, right: showWtChart ? 60 : 100, bottom: 40, left: showWtChart ? 60 : 100 }}
                       innerRadius={0.6}
                       padAngle={2}
                       cornerRadius={4}
@@ -524,7 +524,7 @@ export const PackPage = () => {
                   {wtPieData.length > 0 ? (
                     <ResponsivePie
                         data={wtPieData}
-                        margin={{ top: 20, right: 40, bottom: 20, left: 40 }}
+                        margin={{ top: 40, right: 60, bottom: 40, left: 60 }}
                         innerRadius={0.6}
                         padAngle={2}
                         cornerRadius={4}

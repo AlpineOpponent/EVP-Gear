@@ -1,6 +1,7 @@
 import { List, Eye, Package, User } from 'lucide-react';
 import { NavItem } from '../shared/NavItem';
 import { cn } from '@/lib/utils';
+import { useSettingsStore } from '../../store/useSettingsStore';
 
 export type PageType = 'home' | 'edit' | 'view' | 'pack';
 
@@ -11,13 +12,20 @@ interface NavbarProps {
 }
 
 export const Navbar = ({ currentPage, onPageChange, onOpenSettings }: NavbarProps) => {
+  const { theme } = useSettingsStore();
+
   return (
     <nav className="h-[72px] w-full bg-card border-b border-border flex items-center justify-between px-4 md:px-[48px] shrink-0">
       <div className="flex items-center gap-4 md:gap-[56px]">
         <button
           onClick={() => onPageChange('home')}
-          className="text-[15px] md:text-[18px] font-mono font-semibold tracking-[2px] md:tracking-[3px] text-primary-foreground hover:text-primary transition-colors cursor-pointer shrink-0"
+          className="flex items-center gap-2 md:gap-3 text-[15px] md:text-[18px] font-mono font-semibold tracking-[2px] md:tracking-[3px] text-primary-foreground hover:text-primary transition-colors cursor-pointer shrink-0"
         >
+          <img
+            src={`/evp.logo.${theme}.svg`}
+            alt="EVP-Gear Logo"
+            className="w-6 h-6 md:w-8 md:h-8 object-contain"
+          />
           EVP-GEAR
         </button>
         <div id="tour-navbar-tabs" className="flex items-center gap-2">
