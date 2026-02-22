@@ -12,11 +12,11 @@ interface NavbarProps {
 
 export const Navbar = ({ currentPage, onPageChange, onOpenSettings }: NavbarProps) => {
   return (
-    <nav className="h-[72px] w-full bg-card border-b border-border flex items-center justify-between px-[48px] shrink-0">
-      <div className="flex items-center gap-[56px]">
+    <nav className="h-[72px] w-full bg-card border-b border-border flex items-center justify-between px-4 md:px-[48px] shrink-0">
+      <div className="flex items-center gap-4 md:gap-[56px]">
         <button
           onClick={() => onPageChange('home')}
-          className="text-[18px] font-mono font-semibold tracking-[3px] text-primary-foreground hover:text-primary transition-colors cursor-pointer"
+          className="text-[15px] md:text-[18px] font-mono font-semibold tracking-[2px] md:tracking-[3px] text-primary-foreground hover:text-primary transition-colors cursor-pointer shrink-0"
         >
           EVP-GEAR
         </button>

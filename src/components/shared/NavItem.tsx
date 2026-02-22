@@ -15,15 +15,18 @@ export const NavItem = ({ icon: Icon, label, active, onClick, className }: NavIt
     <button
       onClick={onClick}
       className={cn(
-        "flex items-center gap-3 px-[14px] py-3 rounded-md transition-colors w-full text-left",
+        "flex items-center gap-2 md:gap-3 px-3 md:px-[14px] py-2 md:py-3 rounded-md transition-colors w-fit text-left",
         active
           ? "bg-accent text-primary-foreground"
           : "text-text-tertiary hover:bg-accent/50 hover:text-primary-foreground",
         className
       )}
     >
-      <Icon className="w-[18px] h-[18px]" />
-      <span className="text-[14px]">{label}</span>
+      <Icon className="w-[18px] h-[18px] shrink-0" />
+      <span className={cn(
+        "text-[14px] font-medium whitespace-nowrap",
+        !active && "hidden md:inline-block"
+      )}>{label}</span>
     </button>
   );
 };
