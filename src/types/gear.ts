@@ -15,7 +15,7 @@ export const GearItemSchema = z.object({
   id: z.string().uuid(),
   name: z.string().min(1, 'Name is required'),
   brand: z.string().optional(),
-  weight: z.number().int().nonnegative(),
+  weight: z.number().nonnegative(),
   weightType: WeightTypeSchema.default('standard'),
   notes: z.string().optional(),
   tagPath: TagPathSchema,
@@ -26,7 +26,7 @@ export type GearItem = z.infer<typeof GearItemSchema>;
 export const PackItemSchema = z.object({
   gearId: z.string().uuid(),
   qty: z.number().int().positive().default(1),
-  overrideWeight: z.number().int().nonnegative().optional(), // In grams, for consumables
+  overrideWeight: z.number().nonnegative().optional(), // In grams, for consumables
 });
 
 export type PackItem = z.infer<typeof PackItemSchema>;

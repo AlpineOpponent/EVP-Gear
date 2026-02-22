@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { GearItemSchema, type GearItem, type WeightType } from '../types/gear';
@@ -9,8 +9,12 @@ import { Button } from '../components/shared/Button';
 import { TagSelect } from '../components/shared/TagSelect';
 import { AlertCircle, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useSettingsStore } from '../store/useSettingsStore';
+import { inputToGrams, gramsToInput } from '../lib/gearUtils';
 
 export const EditPage = ({ initialData, onComplete }: { initialData?: GearItem; onComplete?: () => void }) => {
+  const { units } = useSettingsStore();
+  const previousUnits = useRef(units);
   const [isNewTT, setIsNewTT] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
 
@@ -24,7 +28,10 @@ export const EditPage = ({ initialData, onComplete }: { initialData?: GearItem; 
     formState: { errors },
   } = useForm<GearItem>({
     resolver: zodResolver(GearItemSchema) as any,
-    defaultValues: initialData || {
+    defaultValues: initialData ? {
+      ...initialData,
+      weight: gramsToInput(initialData.weight, units)
+    } : {
       id: crypto.randomUUID(),
       weight: 0,
       weightType: 'standard',
@@ -35,9 +42,23 @@ export const EditPage = ({ initialData, onComplete }: { initialData?: GearItem; 
   // Reset form when initialData changes
   useEffect(() => {
     if (initialData) {
-      reset(initialData);
+      reset({
+        ...initialData,
+        weight: gramsToInput(initialData.weight, units)
+      });
     }
-  }, [initialData, reset]);
+  }, [initialData, reset]); // Removed units to avoid overriding unsaved edits when unit changes
+
+  // Handle unit conversion for in-progress edits
+  useEffect(() => {
+    if (previousUnits.current !== units) {
+      const currentWeight = watch('weight') || 0;
+      const asGrams = inputToGrams(currentWeight, previousUnits.current);
+      const newWeight = gramsToInput(asGrams, units);
+      setValue('weight', newWeight);
+      previousUnits.current = units;
+    }
+  }, [units, watch, setValue]);
 
   const watchTt = watch('tagPath.tt');
   const watchMt = watch('tagPath.mt');
@@ -76,7 +97,13 @@ export const EditPage = ({ initialData, onComplete }: { initialData?: GearItem; 
 
   const onSubmit = async (data: GearItem) => {
     try {
-      await db.gearItems.put(data);
+      // Convert weight back to grams for database storage
+      const finalData = {
+        ...data,
+        weight: inputToGrams(data.weight, units)
+      };
+
+      await db.gearItems.put(finalData);
       setSuccessMsg('Gear saved successfully!');
       setTimeout(() => {
         setSuccessMsg('');
@@ -148,10 +175,12 @@ export const EditPage = ({ initialData, onComplete }: { initialData?: GearItem; 
 
             <div className="grid grid-cols-1 lg:grid-cols-[402px_231px_1fr] gap-6 items-start">
               <InputGroup
-                label="Weight (Grams)"
+                label={`Weight (${units === 'metric' ? 'g' : 'oz'})`}
                 type="number"
+                step={units === 'metric' ? '1' : '0.01'}
                 placeholder="0"
                 {...register('weight', { valueAsNumber: true })}
+                className={errors.weight ? "border-destructive" : ""}
               />
 
               <div className="flex flex-col gap-3">

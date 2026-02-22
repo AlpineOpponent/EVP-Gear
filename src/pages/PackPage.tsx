@@ -29,6 +29,8 @@ import {
 import { Input } from '../components/ui/input';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import { PackExport } from '../components/PackExport';
+import { useSettingsStore } from '../store/useSettingsStore';
+import { formatWeight, inputToGrams, gramsToInput } from '../lib/gearUtils';
 import {
     Dialog,
     DialogContent,
@@ -77,12 +79,17 @@ const WeightOverridePopover = ({
     baseWeight: number;
     onUpdate: (gearId: string, weight?: number) => void;
 }) => {
-    const [value, setValue] = React.useState(currentOverride?.toString() || '');
+    const { units } = useSettingsStore();
+    const [value, setValue] = React.useState(
+        currentOverride !== undefined
+            ? gramsToInput(currentOverride, units).toString()
+            : ''
+    );
 
     const handleSave = () => {
         const num = parseFloat(value);
         if (!isNaN(num)) {
-            onUpdate(gearId, num);
+            onUpdate(gearId, inputToGrams(num, units));
         } else if (value === '') {
             onUpdate(gearId, undefined);
         }
@@ -99,14 +106,15 @@ const WeightOverridePopover = ({
                 <div className="flex flex-col gap-4">
                     <div className="flex flex-col gap-1.5">
                         <label className="text-[10px] font-bold text-text-tertiary uppercase tracking-wider">
-                            Override Weight (g)
+                            Override Weight ({units === 'metric' ? 'g' : 'oz'})
                         </label>
                         <div className="flex gap-2">
                             <Input
                                 type="number"
+                                step={units === 'metric' ? '1' : '0.01'}
                                 value={value}
                                 onChange={(e) => setValue(e.target.value)}
-                                placeholder={`${baseWeight}g`}
+                                placeholder={formatWeight(baseWeight, units)}
                                 className="h-8 text-xs bg-surface-recessed"
                             />
                             <button
@@ -125,7 +133,7 @@ const WeightOverridePopover = ({
                             }}
                             className="text-[10px] text-text-muted hover:text-primary transition-colors text-left font-medium"
                         >
-                            Reset to original ({baseWeight}g)
+                            Reset to original ({formatWeight(baseWeight, units)})
                         </button>
                     )}
                 </div>
@@ -135,6 +143,7 @@ const WeightOverridePopover = ({
 };
 
 export const PackPage = () => {
+  const { units } = useSettingsStore();
   const {
     currentPackId,
     currentPackName,
@@ -349,7 +358,7 @@ export const PackPage = () => {
                       </span>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className="text-xs font-mono text-text-secondary">{item.weight}g</span>
+                      <span className="text-xs font-mono text-text-secondary">{formatWeight(item.weight, units)}</span>
                       <Plus className="w-4 h-4 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
                   </button>
@@ -409,7 +418,7 @@ export const PackPage = () => {
           </div>
           <div className="flex items-center gap-2">
             <PDFDownloadLink
-                document={<PackExport packName={currentPackName} items={resolvedItems as any} stats={stats} />}
+                document={<PackExport packName={currentPackName} units={units} items={resolvedItems as any} stats={stats} />}
                 fileName={`${currentPackName.replace(/\s+/g, '_')}.pdf`}
                 className="flex items-center gap-2 px-3 py-1.5 border border-border rounded-md text-xs font-medium hover:bg-accent transition-colors text-foreground no-underline"
             >
@@ -482,6 +491,7 @@ export const PackPage = () => {
                 {pieData.length > 0 ? (
                   <ResponsivePie
                       data={pieData}
+                      valueFormat={value => formatWeight(value, units)}
                       margin={{ top: 40, right: showWtChart ? 60 : 100, bottom: 40, left: showWtChart ? 60 : 100 }}
                       innerRadius={0.6}
                       padAngle={2}
@@ -524,6 +534,7 @@ export const PackPage = () => {
                   {wtPieData.length > 0 ? (
                     <ResponsivePie
                         data={wtPieData}
+                        valueFormat={value => formatWeight(value, units)}
                         margin={{ top: 40, right: 60, bottom: 40, left: 60 }}
                         innerRadius={0.6}
                         padAngle={2}
@@ -582,7 +593,7 @@ export const PackPage = () => {
                             />
                             <div className="flex flex-col items-end">
                                 <span className="text-xs font-mono text-text-secondary">
-                                    {(item.overrideWeight ?? item.gear!.weight) * item.qty}g
+                                    {formatWeight((item.overrideWeight ?? item.gear!.weight) * item.qty, units)}
                                 </span>
                                 {item.overrideWeight !== undefined && (
                                     <span className="text-[9px] text-orange-light">Override applied</span>
@@ -626,19 +637,19 @@ export const PackPage = () => {
         <div className="bg-card border-t border-border p-4 md:p-6 flex flex-wrap items-center justify-between md:justify-start gap-4 md:gap-12 shrink-0">
           <div className="flex flex-col gap-1">
             <span className="text-[10px] font-bold text-text-tertiary uppercase">Total Weight</span>
-            <span className="text-xl font-mono text-primary-foreground">{stats.total}g</span>
+            <span className="text-xl font-mono text-primary-foreground">{formatWeight(stats.total, units, true)}</span>
           </div>
           <div className="flex flex-col gap-1">
             <span className="text-[10px] font-bold text-text-tertiary uppercase">Base Weight</span>
-            <span className="text-xl font-mono text-primary">{stats.base}g</span>
+            <span className="text-xl font-mono text-primary">{formatWeight(stats.base, units, true)}</span>
           </div>
           <div className="flex flex-col gap-1">
             <span className="text-[10px] font-bold text-text-tertiary uppercase">Worn</span>
-            <span className="text-lg font-mono text-text-secondary">{stats.worn}g</span>
+            <span className="text-lg font-mono text-text-secondary">{formatWeight(stats.worn, units, true)}</span>
           </div>
           <div className="flex flex-col gap-1">
             <span className="text-[10px] font-bold text-text-tertiary uppercase">Consumable</span>
-            <span className="text-lg font-mono text-text-secondary">{stats.consumable}g</span>
+            <span className="text-lg font-mono text-text-secondary">{formatWeight(stats.consumable, units, true)}</span>
           </div>
         </div>
       </div>

@@ -11,6 +11,7 @@ import {
   Font
 } from '@react-pdf/renderer';
 import { type GearItem } from '../types/gear';
+import { formatWeight } from '../lib/gearUtils';
 
 // Register the fancy font
 Font.register({
@@ -158,7 +159,7 @@ const styles = StyleSheet.create({
 });
 
 // Helper to draw an SVG Pie Chart for @react-pdf/renderer
-const PieChart = ({ data, size = 100 }: { data: { label: string, value: number, color: string }[], size?: number }) => {
+const PieChart = ({ data, units, size = 100 }: { data: { label: string, value: number, color: string }[], units: 'metric' | 'imperial', size?: number }) => {
   const total = data.reduce((sum, d) => sum + d.value, 0);
   if (total === 0) {
     return (
@@ -210,7 +211,7 @@ const PieChart = ({ data, size = 100 }: { data: { label: string, value: number, 
         {data.filter(d => d.value > 0).map((d, i) => (
           <View key={i} style={styles.legendItem}>
             <View style={[styles.legendColor, { backgroundColor: d.color }]} />
-            <Text style={styles.legendText}>{d.label} ({Math.round(d.value)}g)</Text>
+            <Text style={styles.legendText}>{d.label} ({formatWeight(d.value, units)})</Text>
           </View>
         ))}
       </View>
@@ -220,6 +221,7 @@ const PieChart = ({ data, size = 100 }: { data: { label: string, value: number, 
 
 interface PackExportProps {
   packName: string;
+  units: 'metric' | 'imperial';
   items: Array<{
     gear: GearItem;
     qty: number;
@@ -233,7 +235,7 @@ interface PackExportProps {
   };
 }
 
-export const PackExport = ({ packName, items, stats }: PackExportProps) => {
+export const PackExport = ({ packName, units, items, stats }: PackExportProps) => {
   // Group items by TT
   const grouped: Record<string, typeof items> = {};
   items.forEach(item => {
@@ -280,30 +282,30 @@ export const PackExport = ({ packName, items, stats }: PackExportProps) => {
         <View style={styles.chartsRow}>
           <View style={styles.chartContainer}>
             <Text style={styles.chartTitle}>Category Distribution</Text>
-            <PieChart data={ttData} size={100} />
+            <PieChart data={ttData} units={units} size={100} />
           </View>
           <View style={styles.chartContainer}>
             <Text style={styles.chartTitle}>Weight Distribution</Text>
-            <PieChart data={wtData} size={100} />
+            <PieChart data={wtData} units={units} size={100} />
           </View>
         </View>
 
         <View style={styles.statsRow}>
           <View style={styles.statItem}>
             <Text style={styles.statLabel}>Total Weight</Text>
-            <Text style={styles.statValue}>{Math.round(stats.total)}g</Text>
+            <Text style={styles.statValue}>{formatWeight(stats.total, units, true)}</Text>
           </View>
           <View style={styles.statItem}>
             <Text style={styles.statLabel}>Base Weight</Text>
-            <Text style={styles.statValueOrange}>{Math.round(stats.base)}g</Text>
+            <Text style={styles.statValueOrange}>{formatWeight(stats.base, units, true)}</Text>
           </View>
           <View style={styles.statItem}>
             <Text style={styles.statLabel}>Worn</Text>
-            <Text style={styles.statValue}>{Math.round(stats.worn)}g</Text>
+            <Text style={styles.statValue}>{formatWeight(stats.worn, units, true)}</Text>
           </View>
           <View style={styles.statItem}>
             <Text style={styles.statLabel}>Consumable</Text>
-            <Text style={styles.statValue}>{Math.round(stats.consumable)}g</Text>
+            <Text style={styles.statValue}>{formatWeight(stats.consumable, units, true)}</Text>
           </View>
         </View>
 
@@ -315,7 +317,7 @@ export const PackExport = ({ packName, items, stats }: PackExportProps) => {
                 <View style={styles.itemLeft}>
                   <View style={styles.checkbox}></View>
                   <Text style={styles.itemMultiplierWeight}>
-                    {item.qty}x {(item.overrideWeight ?? item.gear.weight)}g
+                    {item.qty}x {formatWeight((item.overrideWeight ?? item.gear.weight), units)}
                   </Text>
                   <View style={styles.itemDetails}>
                     <Text style={styles.itemName}>{item.gear.name}</Text>

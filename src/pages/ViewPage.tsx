@@ -5,6 +5,8 @@ import { Search, Edit2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { type GearItem } from '../types/gear';
 import { getBrandLogo } from '../lib/logoAssets';
+import { useSettingsStore } from '../store/useSettingsStore';
+import { formatWeight } from '../lib/gearUtils';
 
 const BrandLogo = ({ brand, className }: { brand?: string; className?: string }) => {
   const [error, setError] = useState(false);
@@ -34,6 +36,7 @@ const BrandLogo = ({ brand, className }: { brand?: string; className?: string })
 
 export const ViewPage = ({ onEdit }: { onEdit?: (item: GearItem) => void }) => {
   const { query, mode, setQuery, setMode } = useSearchStore();
+  const { units } = useSettingsStore();
   const gear = useGearSearch() || [];
   const [sliderStyle, setSliderStyle] = useState({ left: 0, width: 0 });
   const tabsRef = useRef<(HTMLButtonElement | null)[]>([]);
@@ -197,7 +200,7 @@ export const ViewPage = ({ onEdit }: { onEdit?: (item: GearItem) => void }) => {
                                                         </div>
                                                         <div className="flex items-center gap-6">
                                                             <div className="text-[14px] font-mono text-text-secondary">
-                                                                {item.weight}g
+                                                                {formatWeight(item.weight, units)}
                                                             </div>
                                                             <button
                                                                 onClick={() => onEdit?.(item)}

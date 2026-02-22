@@ -47,14 +47,46 @@ export const calculateWeightStats = (
     return stats;
 };
 
+export const GRAMS_PER_OZ = 28.3495;
+
 /**
- * Formats weight in grams to a readable string (e.g., "1.2kg" or "800g")
+ * Formats weight in grams to a readable string (e.g., "1.2kg" or "5.5oz")
  */
-export const formatWeight = (grams: number): string => {
-    if (grams >= 1000) {
-        return `${(grams / 1000).toFixed(2)}kg`;
+export const formatWeight = (grams: number, units: 'metric' | 'imperial' = 'metric', isTotal: boolean = false): string => {
+    if (grams === 0) return units === 'metric' ? '0g' : '0oz';
+
+    if (units === 'metric') {
+        if (isTotal && grams >= 1000) {
+            return `${(grams / 1000).toFixed(2)}kg`;
+        }
+        return `${Math.round(grams)}g`;
+    } else {
+        const totalOz = grams / GRAMS_PER_OZ;
+
+        if (isTotal && totalOz >= 16) {
+            const lbs = Math.floor(totalOz / 16);
+            const oz = (totalOz % 16).toFixed(1);
+            return `${lbs}lb ${oz}oz`;
+        }
+
+        return `${parseFloat(totalOz.toFixed(2))}oz`;
     }
-    return `${grams}g`;
+};
+
+export const inputToGrams = (val: number, units: 'metric' | 'imperial'): number => {
+    if (!val) return 0;
+    if (units === 'metric') {
+        return Math.round(val);
+    }
+    return Math.round(val * GRAMS_PER_OZ);
+};
+
+export const gramsToInput = (grams: number, units: 'metric' | 'imperial'): number => {
+    if (!grams) return 0;
+    if (units === 'metric') {
+        return Math.round(grams);
+    }
+    return parseFloat((grams / GRAMS_PER_OZ).toFixed(2));
 };
 
 /**
