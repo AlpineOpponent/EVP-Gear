@@ -30,8 +30,9 @@ export default defineConfig({
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,json}'],
+        globPatterns: ['**/*.{js,css,html,svg,json,png}'],
         cleanupOutdatedCaches: true,
+        maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, // 10MB to accommodate large JS chunks and brand logos
       }
     })
   ],
@@ -40,4 +41,16 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    chunkSizeWarningLimit: 3000, // Suppress the 500kb warning since we are a heavy local-first app
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-hook-form', 'zod', 'zustand'],
+          pdf: ['@react-pdf/renderer'],
+          charts: ['@nivo/pie', '@nivo/core'],
+        }
+      }
+    }
+  }
 })
