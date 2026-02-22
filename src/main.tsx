@@ -2,6 +2,12 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
+import { registerSW } from 'virtual:pwa-register'
+
+// Register Service Worker for PWA
+if ('serviceWorker' in navigator) {
+  registerSW({ immediate: true })
+}
 
 const initTheme = () => {
   const saved = localStorage.getItem('evp-theme') || 'dark';
