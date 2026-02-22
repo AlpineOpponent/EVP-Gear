@@ -19,14 +19,18 @@ export const Navbar = ({ currentPage, onPageChange, onOpenSettings }: NavbarProp
       <div className="flex items-center gap-4 md:gap-[56px]">
         <button
           onClick={() => onPageChange('home')}
-          className="flex items-center gap-2 md:gap-3 text-[15px] md:text-[18px] font-mono font-semibold tracking-[2px] md:tracking-[3px] text-primary-foreground hover:text-primary transition-colors cursor-pointer shrink-0"
+          className="flex items-center gap-2 md:gap-3 text-[14px] md:text-[18px] font-mono font-semibold tracking-[2px] md:tracking-[3px] text-primary-foreground hover:text-primary transition-colors cursor-pointer shrink-0"
         >
           <img
             src={`/evp.logo.${theme}.svg`}
             alt="EVP-Gear Logo"
-            className="w-6 h-6 md:w-8 md:h-8 object-contain"
+            className="w-7 h-7 md:w-8 md:h-8 object-contain shrink-0"
           />
-          EVP-GEAR
+          <div className="flex flex-col items-start md:flex-row md:items-center text-left leading-[1.1] md:leading-normal">
+            <span>EVP</span>
+            <span className="hidden md:inline">-</span>
+            <span>GEAR</span>
+          </div>
         </button>
         <div id="tour-navbar-tabs" className="flex items-center gap-2">
           <NavItem
