@@ -1,6 +1,6 @@
 <div align="center">
   <img src="public/evp.logo.dark.svg" alt="EVP-Gear Logo" width="120" />
-  <h1>[EVP-Gear].(https://lleonhardwatzl.uk/).</h1>
+ <h1><a href="https://lleonhardwatzl.uk/">EVP-Gear</a></h1>
   <p><strong>A modular, local-first web application designed for precise gear management and pack planning.</strong></p>
 
   ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
