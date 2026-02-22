@@ -246,7 +246,7 @@ const PieChart = ({ data, units, size = 100 }: { data: { label: string, value: n
         {data.filter(d => d.value > 0).map((d, i) => (
           <View key={i} style={styles.legendItem}>
             <View style={[styles.legendColor, { backgroundColor: d.color }]} />
-            <Text style={styles.legendText}>{d.label} ({formatWeight(d.value, units)})</Text>
+            <Text style={styles.legendText}>{d.label} ({formatWeight(d.value, units)}) — {((d.value / total) * 100).toFixed(1)}%</Text>
           </View>
         ))}
       </View>
