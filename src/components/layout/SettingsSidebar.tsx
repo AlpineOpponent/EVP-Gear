@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Settings, Database, Info, Shield, LogOut, Package, Plus, MoreVertical, Edit2, Trash2 } from 'lucide-react';
+import { X, Settings, Database, Info, Shield, LogOut, Package, Plus, MoreVertical, Edit2, Trash2, Github } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '../shared/Button';
 import { useLiveQuery } from 'dexie-react-hooks';
@@ -263,6 +263,15 @@ export const SettingsSidebar = ({ isOpen, onClose, onNavigate }: SettingsSidebar
                     <span className="text-[10px] text-text-tertiary">Production Build</span>
                   </div>
                 </div>
+                <a
+                  href="https://github.com/AlpineOpponent/EVP-Gear"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full flex items-center gap-3 p-3 hover:bg-accent rounded-lg text-sm text-text-secondary transition-colors group cursor-pointer"
+                >
+                  <Github className="w-4 h-4 text-text-tertiary group-hover:text-primary transition-colors" />
+                  <span>View on GitHub</span>
+                </a>
               </div>
             </section>
           </div>
