@@ -90,7 +90,7 @@ export const ViewPage = ({ onEdit }: { onEdit?: (item: GearItem) => void }) => {
   }, [mode]);
 
   return (
-    <div className="flex flex-col gap-8 p-[48px] h-full overflow-auto bg-background">
+    <div className="flex flex-col gap-4 md:gap-8 p-4 md:p-[48px] h-full overflow-auto bg-background">
       <div className="flex flex-col gap-2">
         <h1 className="text-[38px] font-display font-normal tracking-[-1px] text-primary-foreground">
           Gear Database
@@ -157,7 +157,7 @@ export const ViewPage = ({ onEdit }: { onEdit?: (item: GearItem) => void }) => {
               <div className="flex flex-col gap-10">
                 {Object.entries(l2s).sort().map(([l2, l3s]) => (
                   <div key={l2} className={cn(
-                      "bg-card border border-border rounded-[12px] p-6 flex flex-col gap-6",
+                      "bg-card border border-border rounded-[12px] p-4 md:p-6 flex flex-col gap-6",
                       l2 === 'Items' && "bg-transparent border-none p-0 shadow-none"
                   )}>
                     {l2 !== 'Items' && (

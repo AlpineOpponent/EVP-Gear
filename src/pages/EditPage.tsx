@@ -112,19 +112,19 @@ export const EditPage = ({ initialData, onComplete }: { initialData?: GearItem; 
   };
 
   return (
-    <div className="flex flex-col items-center gap-[32px] p-[48px] px-[40px] h-full overflow-auto bg-background">
+    <div className="flex flex-col items-center gap-6 md:gap-[32px] p-4 md:p-[48px] md:px-[40px] h-full overflow-auto bg-background">
       <div className="flex flex-col gap-2 w-full max-w-[1359px]">
         <h1 className="text-[38px] font-display font-normal tracking-[-1px] text-primary-foreground">
           {initialData ? 'Edit Gear' : 'Add Gear'}
         </h1>
       </div>
 
-      <div id="tour-edit-form" className="bg-card rounded-[12px] p-8 flex flex-col gap-8 w-full max-w-[1359px] border border-border/50 shadow-sm">
+      <div id="tour-edit-form" className="bg-card rounded-[12px] p-4 md:p-8 flex flex-col gap-8 w-full max-w-[1359px] border border-border/50 shadow-sm">
         <form onSubmit={handleSubmit(onSubmit as any)} className="flex flex-col gap-8">
           <div className="flex flex-col gap-8">
             <h2 className="text-[14px] font-semibold text-primary-foreground">Gear Attributes</h2>
 
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <InputGroup
                 label="Name"
                 placeholder="e.g. Defence 4"
@@ -146,7 +146,7 @@ export const EditPage = ({ initialData, onComplete }: { initialData?: GearItem; 
               />
             </div>
 
-            <div className="grid grid-cols-[402px_231px_1fr] gap-6 items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-[402px_231px_1fr] gap-6 items-start">
               <InputGroup
                 label="Weight (Grams)"
                 type="number"
@@ -196,7 +196,7 @@ export const EditPage = ({ initialData, onComplete }: { initialData?: GearItem; 
               )}
             </div>
 
-            <div className="grid grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <Controller
                 name="tagPath.tt"
                 control={control}

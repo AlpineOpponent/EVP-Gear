@@ -205,40 +205,6 @@ export const PackPage = () => {
     return groups;
   }, [inventory, mode]);
 
-  // Group resolved items by selected mode for the pack list
-  const groupedPacked = useMemo(() => {
-    const groups: Record<string, Record<string, Record<string, Record<string, typeof resolvedItems>>>> = {};
-
-    resolvedItems.forEach(item => {
-      let l1 = 'Other', l2 = 'General', l3 = 'Item', l4 = 'All';
-
-      if (mode === 'tag') {
-        l1 = item.gear!.tagPath.tt;
-        l2 = item.gear!.tagPath.mt || 'General';
-        l3 = item.gear!.tagPath.bt || 'Other';
-        l4 = 'All';
-      } else if (mode === 'brand') {
-        l1 = item.gear!.brand || 'No Brand';
-        l2 = item.gear!.tagPath.tt;
-        l3 = item.gear!.tagPath.mt || 'General';
-        l4 = item.gear!.tagPath.bt || 'Other';
-      } else if (mode === 'name') {
-        l1 = item.gear!.name.charAt(0).toUpperCase();
-        l2 = 'Items';
-        l3 = 'All';
-        l4 = 'All';
-      }
-
-      if (!groups[l1]) groups[l1] = {};
-      if (!groups[l1][l2]) groups[l1][l2] = {};
-      if (!groups[l1][l2][l3]) groups[l1][l2][l3] = {};
-      if (!groups[l1][l2][l3][l4]) groups[l1][l2][l3][l4] = [];
-      groups[l1][l2][l3][l4].push(item);
-    });
-
-    return groups;
-  }, [resolvedItems, mode]);
-
   // Calculate Stats
   const stats = useMemo(() => {
     let total = 0;
@@ -304,12 +270,12 @@ export const PackPage = () => {
   ].filter(d => d.value > 0), [stats]);
 
   return (
-    <div className="flex h-full overflow-hidden bg-background">
+    <div className="flex flex-col md:flex-row h-full overflow-hidden bg-background">
       {/* Left Panel: Inventory */}
       <div
         className={cn(
-          "bg-card border-r border-border transition-all duration-300 flex flex-col",
-          isLeftCollapsed ? "w-0 overflow-hidden border-none" : "w-1/2"
+          "bg-card border-b md:border-b-0 md:border-r border-border transition-all duration-300 flex flex-col",
+          isLeftCollapsed ? "h-0 md:w-0 md:h-full overflow-hidden border-none" : "h-1/2 md:h-full md:w-1/2"
         )}
       >
         <div className="p-6 flex flex-col gap-6">
@@ -395,18 +361,19 @@ export const PackPage = () => {
       </div>
 
       {/* Right Panel: Builder */}
-      <div id="tour-pack-builder" className="flex-1 flex flex-col bg-surface-recessed relative">
+      <div id="tour-pack-builder" className="flex-1 flex flex-col bg-surface-recessed relative overflow-hidden">
         {isLeftCollapsed && (
           <button
             onClick={() => setIsLeftCollapsed(false)}
-            className="absolute left-0 top-1/2 -translate-y-1/2 bg-card border border-border border-l-0 rounded-r-md p-1 text-text-muted hover:text-primary z-10"
+            className="absolute left-1/2 top-0 -translate-x-1/2 md:left-0 md:top-1/2 md:-translate-y-1/2 md:translate-x-0 bg-card border border-border border-t-0 md:border-t md:border-l-0 rounded-b-md md:rounded-r-md md:rounded-b-none p-1 text-text-muted hover:text-primary z-10"
           >
-            <ChevronRight className="w-5 h-5" />
+            <ChevronRight className="w-5 h-5 hidden md:block" />
+            <div className="w-5 h-5 flex items-center justify-center md:hidden font-bold">↓</div>
           </button>
         )}
 
         {/* Header */}
-        <div className="bg-card border-b border-border p-6 flex items-center justify-between">
+        <div className="bg-card border-b border-border p-4 md:p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <h2 className="text-2xl font-display text-primary-foreground">{currentPackName}</h2>
             <Dialog>
@@ -592,98 +559,61 @@ export const PackPage = () => {
           {/* Pack List */}
           <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
             <h3 className="text-2xl font-display text-primary-foreground mb-6">Packed Gear</h3>
-            <div className="space-y-12">
-              {Object.entries(groupedPacked).sort().map(([l1, l2s]) => (
-                <div key={l1} className="space-y-6">
-                  <h4 className="text-xl font-display text-primary border-b border-primary/20 pb-2">{l1}</h4>
-
-                  <div className="space-y-8">
-                    {Object.entries(l2s).sort().map(([l2, l3s]) => (
-                      <div key={l2} className={cn("space-y-4", l2 === 'Items' && "space-y-0")}>
-                        {l2 !== 'Items' && (
-                          <h5 className="text-[16px] font-display text-primary-foreground/80 ml-2 italic">{l2}</h5>
-                        )}
-
-                        <div className="space-y-6">
-                          {Object.entries(l3s).sort().map(([l3, l4s]) => (
-                            <div key={l3} className={cn("space-y-4 ml-2", l3 === 'All' && "ml-0")}>
-                              {l3 !== 'All' && (
-                                <h5 className="text-[16px] font-display text-primary-foreground/80 italic">{l3}</h5>
-                              )}
-
-                              <div className="space-y-6">
-                                {Object.entries(l4s).sort().map(([l4, items]) => (
-                                  <div key={l4} className={cn("space-y-3 ml-2", l4 === 'All' && "ml-0")}>
-                                    {l4 !== 'All' && (
-                                      <div className="flex items-center gap-2 opacity-60">
-                                        <div className="h-[1px] w-3 bg-text-muted" />
-                                        <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest">{l4}</span>
-                                      </div>
-                                    )}
-
-                                    <div className="space-y-2">
-                                      {items.map(item => (
-                                        <div key={item.gearId} className="flex items-center justify-between p-3 bg-surface-elevated border border-white/5 rounded-lg group hover:border-primary/30 transition-all">
-                                          <div className="flex items-center gap-4">
-                                            <BrandLogo brand={item.gear!.brand} />
-                                            <div className="flex flex-col">
-                                              <span className="text-sm font-medium text-primary-foreground">{item.gear!.name}</span>
-                                            </div>
-                                          </div>
-                                          <div className="flex items-center gap-6">
-                                             <div className="flex items-center gap-3">
-                                                 <WeightOverridePopover
-                                                     gearId={item.gearId}
-                                                     currentOverride={item.overrideWeight}
-                                                     baseWeight={item.gear!.weight}
-                                                     onUpdate={updateOverrideWeight}
-                                                 />
-                                                 <div className="flex flex-col items-end">
-                                                      <span className="text-xs font-mono text-text-secondary">
-                                                          {(item.overrideWeight ?? item.gear!.weight) * item.qty}g
-                                                      </span>
-                                                      {item.overrideWeight !== undefined && (
-                                                          <span className="text-[9px] text-orange-light">Override applied</span>
-                                                      )}
-                                                 </div>
-                                             </div>
-                                             <div className="flex items-center gap-2 bg-surface-recessed rounded-md p-1 border border-white/5">
-                                                  <button
-                                                      onClick={() => updateQty(item.gearId, Math.max(1, item.qty - 1))}
-                                                      className="p-1 hover:bg-accent rounded text-text-muted"
-                                                  >
-                                                      <Minus className="w-3 h-3" />
-                                                  </button>
-                                                  <span className="text-xs font-mono w-4 text-center">{item.qty}</span>
-                                                  <button
-                                                      onClick={() => updateQty(item.gearId, item.qty + 1)}
-                                                      className="p-1 hover:bg-accent rounded text-text-muted"
-                                                  >
-                                                      <Plus className="w-3 h-3" />
-                                                  </button>
-                                             </div>
-                                             <button
-                                                  onClick={() => removeItem(item.gearId)}
-                                                  className="p-1.5 text-text-muted hover:text-destructive hover:bg-destructive/10 rounded-md opacity-0 group-hover:opacity-100 transition-all"
-                                             >
-                                              <Trash2 className="w-4 h-4" />
-                                             </button>
-                                          </div>
-                                        </div>
-                                      ))}
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
+            <div className="space-y-2">
+              {resolvedItems.length > 0 ? (
+                resolvedItems.sort((a, b) => a.gear!.name.localeCompare(b.gear!.name)).map(item => (
+                  <div key={item.gearId} className="flex items-center justify-between p-3 bg-surface-elevated border border-white/5 rounded-lg group hover:border-primary/30 transition-all">
+                    <div className="flex items-center gap-4">
+                      <BrandLogo brand={item.gear!.brand} />
+                      <div className="flex flex-col">
+                        <span className="text-sm font-medium text-primary-foreground">{item.gear!.name}</span>
+                        <span className="text-[10px] text-text-tertiary uppercase tracking-tight mt-0.5">
+                          {[item.gear!.tagPath.tt, item.gear!.tagPath.mt, item.gear!.tagPath.bt].filter(Boolean).join(' / ')}
+                        </span>
                       </div>
-                    ))}
+                    </div>
+                    <div className="flex items-center gap-6">
+                        <div className="flex items-center gap-3">
+                            <WeightOverridePopover
+                                gearId={item.gearId}
+                                currentOverride={item.overrideWeight}
+                                baseWeight={item.gear!.weight}
+                                onUpdate={updateOverrideWeight}
+                            />
+                            <div className="flex flex-col items-end">
+                                <span className="text-xs font-mono text-text-secondary">
+                                    {(item.overrideWeight ?? item.gear!.weight) * item.qty}g
+                                </span>
+                                {item.overrideWeight !== undefined && (
+                                    <span className="text-[9px] text-orange-light">Override applied</span>
+                                )}
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-2 bg-surface-recessed rounded-md p-1 border border-white/5">
+                            <button
+                                onClick={() => updateQty(item.gearId, Math.max(1, item.qty - 1))}
+                                className="p-1 hover:bg-accent rounded text-text-muted"
+                            >
+                                <Minus className="w-3 h-3" />
+                            </button>
+                            <span className="text-xs font-mono w-4 text-center">{item.qty}</span>
+                            <button
+                                onClick={() => updateQty(item.gearId, item.qty + 1)}
+                                className="p-1 hover:bg-accent rounded text-text-muted"
+                            >
+                                <Plus className="w-3 h-3" />
+                            </button>
+                        </div>
+                        <button
+                            onClick={() => removeItem(item.gearId)}
+                            className="p-1.5 text-text-muted hover:text-destructive hover:bg-destructive/10 rounded-md opacity-0 group-hover:opacity-100 transition-all cursor-pointer"
+                        >
+                            <Trash2 className="w-4 h-4" />
+                        </button>
+                    </div>
                   </div>
-                </div>
-              ))}
-              {resolvedItems.length === 0 && (
+                ))
+              ) : (
                 <div className="py-10 text-center text-text-muted italic text-sm">
                     No items in your pack. Select gear from the inventory.
                 </div>
@@ -693,7 +623,7 @@ export const PackPage = () => {
         </div>
 
         {/* Footer Stats */}
-        <div className="bg-card border-t border-border p-6 flex items-center gap-12 shrink-0">
+        <div className="bg-card border-t border-border p-4 md:p-6 flex flex-wrap items-center justify-between md:justify-start gap-4 md:gap-12 shrink-0">
           <div className="flex flex-col gap-1">
             <span className="text-[10px] font-bold text-text-tertiary uppercase">Total Weight</span>
             <span className="text-xl font-mono text-primary-foreground">{stats.total}g</span>
