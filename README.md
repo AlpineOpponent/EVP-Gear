@@ -11,7 +11,7 @@
 
 <br />
 
-EVP-Gear is an analytical, database-driven tool for backpackers, climbers, and photographers to obsessively track and analyze their equipment. Built for speed and privacy, it runs entirely in your browser using IndexedDB.
+EVP-Gear is an analytical, database-driven tool for backpackers, climbers, and photographers to obsessively track and analyze their equipment. Built for speed and privacy, it runs entirely in your browser using IndexedDB. EVP-Gear is Open Source and published under the GNU General Public License.
 
 ## 📸 The Interface
 
